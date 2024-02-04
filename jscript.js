@@ -1,4 +1,6 @@
 const Choice = ["Rock", "Paper", "Scissors"];
+let userScore = 0;
+let compScore = 0;
 
 function getComputerChoice() {
     let select = Math.floor(Math.random() * 3);
@@ -6,79 +8,79 @@ function getComputerChoice() {
 }
 
 function playRound(compSelection, playerSelection) {
-    let pselect = playerSelection[0].toUpperCase() + playerSelection.substr(1).toLowerCase();
-    const WIN = `You Win! ${pselect} beats ${compSelection}.`;
-    const LOSE = `You Lose! ${compSelection} beats ${pselect}.`;
+    const WIN = `You Win! ${playerSelection} beats ${compSelection}.`;
+    const LOSE = `You Lose! ${compSelection} beats ${playerSelection}.`;
     const TIED = `It's a draw!`;
-    console.log(`Player selection was ${playerSelection} and the computer was ${compSelection}.`);
+    const selection = `You have chosen ${playerSelection} and the computer has chosen ${compSelection}.`;
 
-    if (pselect == compSelection) {
-         console.log(TIED);
-        return playRound(getComputerChoice(), prompt(TIED + " Choose your move...").trim());
-    }
-
-    if (pselect == "Rock") {
-        if (compSelection == "Paper") {
-            // return LOSE;
-            console.log(LOSE)
-            return "L";
-        } else {
-            // return WIN;
-            console.log(WIN)
-            return "W";
-        }
-    } else if (pselect == "Paper") {
-        if (compSelection == "Scissors") {
-            // return LOSE;
-            console.log(LOSE)
-            return "L";
-        } else {
-            // return WIN;
-            console.log(WIN)
-            return "W";
-        }
-    } else if (pselect == "Scissors") {
-        if (compSelection == "Rock") {
-            // return LOSE;
-            console.log(LOSE)
-            return "L";
-        } else {
-            // return WIN;
-            console.log(WIN)
-            return "W";
-        }
+    if (playerSelection == compSelection) {
+        return [selection, TIED, 'D'];
+    } else if ((playerSelection == "Rock" && compSelection == "Paper") || 
+        (playerSelection == "Paper" && compSelection == "Scissors") ||
+        (playerSelection == "Scissors" && compSelection == "Rock")) {
+        return [selection, LOSE, "L"];
     } else {
-        console.log(`'${playerSelection}' is an invalid input. Must be either rock, paper, or scissors!`);
-        return playRound(getComputerChoice(), prompt("Invalid move. Try again move...").trim());
+        return [selection, WIN, "W"];
     }
 }
 
-function game(rounds) {
-    let playerWins = 0;
-    let compWins = 0;
-    let wins = rounds - 2;
-    while(true) {
-        let result = playRound(getComputerChoice(), prompt("Choose your move...").trim());
-        if (result == "L") {
-            compWins++;
-            console.log(`Score is Computer ${compWins} and Player ${playerWins}`);
-        } else if (result == "W") {
-            playerWins++;
-            console.log(`Score is Computer ${compWins} and Player ${playerWins}`);
-        }
-
-        if (playerWins == wins) {
-            return "You win!";
-        } else if (compWins == wins){
-            return "Computer wins!"
-        }
+function updateScore(winner) {
+    if (winner == 'W') {
+        userScore ++;
+    } else if (winner == 'L') {
+        compScore ++;
     }
-    // return console.log(WIN);
 }
 
-const BestofRounds = 5;
-// const CompSelection = getComputerChoice();
-// let playSelection = prompt("Choose your move...");
+function endGame(champion){
+    playerSelection.forEach(element => element.remove());
+    outcome.appendChild(selections);
+    finalImage.height = '400';
+    selections.style.fontSize = '50px';
+    headTitle.textContent = 'GAME SET!';
+    headTitle.style.fontSize = '25px';
+    if (champion == 'player') {
+        finalImage.src = 'images/221221005245-01-messi-world-cup-celebration-121822-restricted.jpg';
+        finalImage.alt = 'GOAT holding World Cup Trophy';
+        selections.textContent = 'Congratulations. You Are Victorious!';    
+    } else {
+        selections.textContent = 'Game Over. You Have Been Defeated!';
+        finalImage.alt = 'Three people pointing and laughing'
+        finalImage.src = 'images/Laughing-at.jpg';
+    }
+}
 
-console.log(game(BestofRounds));
-// console.log(playRound(CompSelection, playSelection.trim()));
+const body = document.querySelector('body');
+const buttons = document.querySelectorAll('button');
+const playerSelection = document.querySelectorAll('.playerSelection');
+const headTitle = document.querySelector('#headTitle');
+
+const outcome = document.createElement('div');
+const selections = document.createElement('p');
+const result = document.createElement('p');
+const score = document.createElement('p');
+
+outcome.appendChild(selections);
+outcome.appendChild(result);
+outcome.appendChild(score);
+body.appendChild(outcome);
+outcome.style.textAlign = 'center';
+
+selections.textContent = 'You will play in a best of 5 against a computer, good luck...';
+const finalImage = document.createElement('img');
+outcome.appendChild(finalImage);
+
+buttons.forEach((button) => {
+    button.addEventListener('click', () => {
+        let [selectionStatement, winStatement, win] = playRound(getComputerChoice(), button.id)
+        selections.textContent = selectionStatement;
+        result.textContent = winStatement;
+        updateScore(win)
+        score.textContent = userScore + ' - ' + compScore;
+        if (userScore == 5) {
+            endGame('player');
+        } else if (compScore == 5) {
+            endGame('computer');
+        }
+    });
+});

@@ -1,4 +1,15 @@
 body {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    /* justify-content: center; */
+    align-items: center;
+    gap: 15px;
+    background-color: black;
+    color: white;
+}
+
+.playerSelection {
+    display: flex;
+    gap: 15px;
+    /* justify-content: center; */
 }
